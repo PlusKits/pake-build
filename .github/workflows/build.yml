@@ -1,0 +1,65 @@
+name: Build Pake App
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'App name (slug format)'
+        required: true
+      title:
+        description: 'App title'
+        required: true
+      url:
+        description: 'Target URL'
+        required: true
+      icon:
+        description: 'Icon URL (optional)'
+        required: false
+        default: ''
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows
+          - os: macos-latest
+            target: macos
+          - os: ubuntu-latest
+            target: linux
+
+    steps:
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install pake-cli
+        run: cargo install pake-cli
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Build app
+        run: |
+          ICON_ARG=""
+          if [ -n "${{ inputs.icon }}" ]; then
+            ICON_ARG="--icon ${{ inputs.icon }}"
+          fi
+          pake "${{ inputs.url }}" --name "${{ inputs.name }}" $ICON_ARG
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.title }}-${{ matrix.target }}
+          path: |
+            *.exe
+            *.dmg
+            *.deb
+            *.AppImage
+          if-no-files-found: warn
