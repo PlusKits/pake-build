@@ -71,6 +71,47 @@ on:
         required: false
         default: 'false'
         type: boolean
+      zoom:
+        description: 'Initial zoom level (50-200)'
+        required: false
+        default: ''
+      multi_instance:
+        description: 'Allow multiple instances'
+        required: false
+        default: 'false'
+        type: boolean
+      enable_drag_drop:
+        description: 'Enable drag and drop'
+        required: false
+        default: 'false'
+        type: boolean
+      wasm:
+        description: 'Enable WebAssembly support'
+        required: false
+        default: 'false'
+        type: boolean
+      debug:
+        description: 'Enable debug mode'
+        required: false
+        default: 'false'
+        type: boolean
+      ignore_certificate_errors:
+        description: 'Ignore SSL errors'
+        required: false
+        default: 'false'
+        type: boolean
+      app_version:
+        description: 'App version'
+        required: false
+        default: ''
+      window_title:
+        description: 'Window title'
+        required: false
+        default: ''
+      activation_shortcut:
+        description: 'Global activation shortcut'
+        required: false
+        default: ''
 
 jobs:
   build-windows:
@@ -107,7 +148,9 @@ jobs:
           INJECT_JS: ${{ inputs.inject_js }}
         run: |
           $cmd = "pake '${{ inputs.url }}' --name '${{ inputs.name }}'"
+          # Use local icon.png if uploaded, otherwise pass URL directly to Pake (it supports URLs natively)
           if (Test-Path "icon.png") { $cmd += " --icon 'icon.png'" }
+          elseif ("${{ inputs.icon }}") { $cmd += " --icon '${{ inputs.icon }}'" }
           if ("${{ inputs.width }}") { $cmd += " --width ${{ inputs.width }}" }
           if ("${{ inputs.height }}") { $cmd += " --height ${{ inputs.height }}" }
           if ("${{ inputs.fullscreen }}" -eq "true") { $cmd += " --fullscreen" }
@@ -115,6 +158,15 @@ jobs:
           if ("${{ inputs.hide_title_bar }}" -eq "true") { $cmd += " --hide-title-bar" }
           if ("${{ inputs.show_system_tray }}" -eq "true") { $cmd += " --show-system-tray" }
           if ("${{ inputs.user_agent }}") { $cmd += " --user-agent '${{ inputs.user_agent }}'" }
+          if ("${{ inputs.zoom }}") { $cmd += " --zoom ${{ inputs.zoom }}" }
+          if ("${{ inputs.multi_instance }}" -eq "true") { $cmd += " --multi-instance" }
+          if ("${{ inputs.enable_drag_drop }}" -eq "true") { $cmd += " --enable-drag-drop" }
+          if ("${{ inputs.wasm }}" -eq "true") { $cmd += " --wasm" }
+          if ("${{ inputs.debug }}" -eq "true") { $cmd += " --debug" }
+          if ("${{ inputs.ignore_certificate_errors }}" -eq "true") { $cmd += " --ignore-certificate-errors" }
+          if ("${{ inputs.app_version }}") { $cmd += " --app-version '${{ inputs.app_version }}'" }
+          if ("${{ inputs.window_title }}") { $cmd += " --title '${{ inputs.window_title }}'" }
+          if ("${{ inputs.activation_shortcut }}") { $cmd += " --activation-shortcut '${{ inputs.activation_shortcut }}'" }
           
           if ($env:INJECT_CSS) { 
             Set-Content -Path "inject.css" -Value $env:INJECT_CSS
@@ -173,7 +225,9 @@ jobs:
           INJECT_JS: ${{ inputs.inject_js }}
         run: |
           CMD="pake "${{ inputs.url }}" --name "${{ inputs.name }}""
-          if [ -f "icon.png" ]; then CMD="$CMD --icon icon.png"; fi
+          # Use local icon.png if uploaded, otherwise pass URL directly to Pake (it supports URLs natively)
+          if [ -f "icon.png" ]; then CMD="$CMD --icon icon.png";
+          elif [ -n "${{ inputs.icon }}" ]; then CMD="$CMD --icon "${{ inputs.icon }}""; fi
           if [ -n "${{ inputs.width }}" ]; then CMD="$CMD --width ${{ inputs.width }}"; fi
           if [ -n "${{ inputs.height }}" ]; then CMD="$CMD --height ${{ inputs.height }}"; fi
           if [ "${{ inputs.fullscreen }}" == "true" ]; then CMD="$CMD --fullscreen"; fi
@@ -182,6 +236,15 @@ jobs:
           if [ "${{ inputs.show_system_tray }}" == "true" ]; then CMD="$CMD --show-system-tray"; fi
           if [ -n "${{ inputs.user_agent }}" ]; then CMD="$CMD --user-agent "${{ inputs.user_agent }}""; fi
           if [ "${{ inputs.multi_arch }}" == "true" ]; then CMD="$CMD --multi-arch"; fi
+          if [ -n "${{ inputs.zoom }}" ]; then CMD="$CMD --zoom ${{ inputs.zoom }}"; fi
+          if [ "${{ inputs.multi_instance }}" == "true" ]; then CMD="$CMD --multi-instance"; fi
+          if [ "${{ inputs.enable_drag_drop }}" == "true" ]; then CMD="$CMD --enable-drag-drop"; fi
+          if [ "${{ inputs.wasm }}" == "true" ]; then CMD="$CMD --wasm"; fi
+          if [ "${{ inputs.debug }}" == "true" ]; then CMD="$CMD --debug"; fi
+          if [ "${{ inputs.ignore_certificate_errors }}" == "true" ]; then CMD="$CMD --ignore-certificate-errors"; fi
+          if [ -n "${{ inputs.app_version }}" ]; then CMD="$CMD --app-version "${{ inputs.app_version }}""; fi
+          if [ -n "${{ inputs.window_title }}" ]; then CMD="$CMD --title "${{ inputs.window_title }}""; fi
+          if [ -n "${{ inputs.activation_shortcut }}" ]; then CMD="$CMD --activation-shortcut "${{ inputs.activation_shortcut }}""; fi
           
           if [ -n "$INJECT_CSS" ]; then 
             echo "$INJECT_CSS" > inject.css
@@ -245,7 +308,9 @@ jobs:
           INJECT_JS: ${{ inputs.inject_js }}
         run: |
           CMD="pake "${{ inputs.url }}" --name "${{ inputs.name }}""
-          if [ -f "icon.png" ]; then CMD="$CMD --icon icon.png"; fi
+          # Use local icon.png if uploaded, otherwise pass URL directly to Pake (it supports URLs natively)
+          if [ -f "icon.png" ]; then CMD="$CMD --icon icon.png";
+          elif [ -n "${{ inputs.icon }}" ]; then CMD="$CMD --icon "${{ inputs.icon }}""; fi
           if [ -n "${{ inputs.width }}" ]; then CMD="$CMD --width ${{ inputs.width }}"; fi
           if [ -n "${{ inputs.height }}" ]; then CMD="$CMD --height ${{ inputs.height }}"; fi
           if [ "${{ inputs.fullscreen }}" == "true" ]; then CMD="$CMD --fullscreen"; fi
@@ -253,6 +318,15 @@ jobs:
           if [ "${{ inputs.hide_title_bar }}" == "true" ]; then CMD="$CMD --hide-title-bar"; fi
           if [ "${{ inputs.show_system_tray }}" == "true" ]; then CMD="$CMD --show-system-tray"; fi
           if [ -n "${{ inputs.user_agent }}" ]; then CMD="$CMD --user-agent "${{ inputs.user_agent }}""; fi
+          if [ -n "${{ inputs.zoom }}" ]; then CMD="$CMD --zoom ${{ inputs.zoom }}"; fi
+          if [ "${{ inputs.multi_instance }}" == "true" ]; then CMD="$CMD --multi-instance"; fi
+          if [ "${{ inputs.enable_drag_drop }}" == "true" ]; then CMD="$CMD --enable-drag-drop"; fi
+          if [ "${{ inputs.wasm }}" == "true" ]; then CMD="$CMD --wasm"; fi
+          if [ "${{ inputs.debug }}" == "true" ]; then CMD="$CMD --debug"; fi
+          if [ "${{ inputs.ignore_certificate_errors }}" == "true" ]; then CMD="$CMD --ignore-certificate-errors"; fi
+          if [ -n "${{ inputs.app_version }}" ]; then CMD="$CMD --app-version "${{ inputs.app_version }}""; fi
+          if [ -n "${{ inputs.window_title }}" ]; then CMD="$CMD --title "${{ inputs.window_title }}""; fi
+          if [ -n "${{ inputs.activation_shortcut }}" ]; then CMD="$CMD --activation-shortcut "${{ inputs.activation_shortcut }}""; fi
           
           if [ -n "$INJECT_CSS" ]; then 
             echo "$INJECT_CSS" > inject.css
