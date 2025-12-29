@@ -112,6 +112,61 @@ on:
         description: 'Global activation shortcut'
         required: false
         default: ''
+      min_width:
+        description: 'Minimum window width'
+        required: false
+        default: ''
+      min_height:
+        description: 'Minimum window height'
+        required: false
+        default: ''
+      maximize:
+        description: 'Start maximized'
+        required: false
+        default: 'false'
+        type: boolean
+      proxy_url:
+        description: 'Proxy server URL'
+        required: false
+        default: ''
+      incognito:
+        description: 'Incognito mode'
+        required: false
+        default: 'false'
+        type: boolean
+      force_internal_navigation:
+        description: 'Force internal navigation'
+        required: false
+        default: 'false'
+        type: boolean
+      disabled_web_shortcuts:
+        description: 'Disable web shortcuts'
+        required: false
+        default: 'false'
+        type: boolean
+      dark_mode:
+        description: 'Force dark mode (macOS)'
+        required: false
+        default: 'false'
+        type: boolean
+      hide_on_close:
+        description: 'Hide on close'
+        required: false
+        default: 'false'
+        type: boolean
+      start_to_tray:
+        description: 'Start minimized to tray'
+        required: false
+        default: 'false'
+        type: boolean
+      tray_icon:
+        description: 'System tray icon path'
+        required: false
+        default: ''
+      installer_language:
+        description: 'Windows installer language'
+        required: false
+        default: ''
 
 jobs:
   build-windows:
@@ -167,6 +222,17 @@ jobs:
           if ("${{ inputs.app_version }}") { $cmd += " --app-version '${{ inputs.app_version }}'" }
           if ("${{ inputs.window_title }}") { $cmd += " --title '${{ inputs.window_title }}'" }
           if ("${{ inputs.activation_shortcut }}") { $cmd += " --activation-shortcut '${{ inputs.activation_shortcut }}'" }
+          if ("${{ inputs.min_width }}") { $cmd += " --min-width ${{ inputs.min_width }}" }
+          if ("${{ inputs.min_height }}") { $cmd += " --min-height ${{ inputs.min_height }}" }
+          if ("${{ inputs.maximize }}" -eq "true") { $cmd += " --maximize" }
+          if ("${{ inputs.proxy_url }}") { $cmd += " --proxy-url '${{ inputs.proxy_url }}'" }
+          if ("${{ inputs.incognito }}" -eq "true") { $cmd += " --incognito" }
+          if ("${{ inputs.force_internal_navigation }}" -eq "true") { $cmd += " --force-internal-navigation" }
+          if ("${{ inputs.disabled_web_shortcuts }}" -eq "true") { $cmd += " --disabled-web-shortcuts" }
+          if ("${{ inputs.hide_on_close }}" -eq "true") { $cmd += " --hide-on-close" }
+          if ("${{ inputs.start_to_tray }}" -eq "true") { $cmd += " --start-to-tray" }
+          if ("${{ inputs.tray_icon }}") { $cmd += " --system-tray-icon '${{ inputs.tray_icon }}'" }
+          if ("${{ inputs.installer_language }}") { $cmd += " --installer-language '${{ inputs.installer_language }}'" }
           
           if ($env:INJECT_CSS) { 
             Set-Content -Path "inject.css" -Value $env:INJECT_CSS
@@ -245,6 +311,17 @@ jobs:
           if [ -n "${{ inputs.app_version }}" ]; then CMD="$CMD --app-version "${{ inputs.app_version }}""; fi
           if [ -n "${{ inputs.window_title }}" ]; then CMD="$CMD --title "${{ inputs.window_title }}""; fi
           if [ -n "${{ inputs.activation_shortcut }}" ]; then CMD="$CMD --activation-shortcut "${{ inputs.activation_shortcut }}""; fi
+          if [ -n "${{ inputs.min_width }}" ]; then CMD="$CMD --min-width ${{ inputs.min_width }}"; fi
+          if [ -n "${{ inputs.min_height }}" ]; then CMD="$CMD --min-height ${{ inputs.min_height }}"; fi
+          if [ "${{ inputs.maximize }}" == "true" ]; then CMD="$CMD --maximize"; fi
+          if [ -n "${{ inputs.proxy_url }}" ]; then CMD="$CMD --proxy-url "${{ inputs.proxy_url }}""; fi
+          if [ "${{ inputs.incognito }}" == "true" ]; then CMD="$CMD --incognito"; fi
+          if [ "${{ inputs.force_internal_navigation }}" == "true" ]; then CMD="$CMD --force-internal-navigation"; fi
+          if [ "${{ inputs.disabled_web_shortcuts }}" == "true" ]; then CMD="$CMD --disabled-web-shortcuts"; fi
+          if [ "${{ inputs.dark_mode }}" == "true" ]; then CMD="$CMD --dark-mode"; fi
+          if [ "${{ inputs.hide_on_close }}" == "true" ]; then CMD="$CMD --hide-on-close"; fi
+          if [ "${{ inputs.start_to_tray }}" == "true" ]; then CMD="$CMD --start-to-tray"; fi
+          if [ -n "${{ inputs.tray_icon }}" ]; then CMD="$CMD --system-tray-icon "${{ inputs.tray_icon }}""; fi
           
           if [ -n "$INJECT_CSS" ]; then 
             echo "$INJECT_CSS" > inject.css
@@ -327,6 +404,16 @@ jobs:
           if [ -n "${{ inputs.app_version }}" ]; then CMD="$CMD --app-version "${{ inputs.app_version }}""; fi
           if [ -n "${{ inputs.window_title }}" ]; then CMD="$CMD --title "${{ inputs.window_title }}""; fi
           if [ -n "${{ inputs.activation_shortcut }}" ]; then CMD="$CMD --activation-shortcut "${{ inputs.activation_shortcut }}""; fi
+          if [ -n "${{ inputs.min_width }}" ]; then CMD="$CMD --min-width ${{ inputs.min_width }}"; fi
+          if [ -n "${{ inputs.min_height }}" ]; then CMD="$CMD --min-height ${{ inputs.min_height }}"; fi
+          if [ "${{ inputs.maximize }}" == "true" ]; then CMD="$CMD --maximize"; fi
+          if [ -n "${{ inputs.proxy_url }}" ]; then CMD="$CMD --proxy-url "${{ inputs.proxy_url }}""; fi
+          if [ "${{ inputs.incognito }}" == "true" ]; then CMD="$CMD --incognito"; fi
+          if [ "${{ inputs.force_internal_navigation }}" == "true" ]; then CMD="$CMD --force-internal-navigation"; fi
+          if [ "${{ inputs.disabled_web_shortcuts }}" == "true" ]; then CMD="$CMD --disabled-web-shortcuts"; fi
+          if [ "${{ inputs.hide_on_close }}" == "true" ]; then CMD="$CMD --hide-on-close"; fi
+          if [ "${{ inputs.start_to_tray }}" == "true" ]; then CMD="$CMD --start-to-tray"; fi
+          if [ -n "${{ inputs.tray_icon }}" ]; then CMD="$CMD --system-tray-icon "${{ inputs.tray_icon }}""; fi
           
           if [ -n "$INJECT_CSS" ]; then 
             echo "$INJECT_CSS" > inject.css
