@@ -52,7 +52,7 @@ jobs:
           node build_script.js
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.title }}-windows
+          name: ${{ inputs.title }} for Windows
           path: |
             *.exe
             *.msi
@@ -83,7 +83,7 @@ jobs:
           node build_script.js
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.title }}-macos
+          name: ${{ inputs.title }} for macOS
           path: |
             *.dmg
             *.app
@@ -117,7 +117,7 @@ jobs:
           node build_script.js
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.title }}-linux
+          name: ${{ inputs.title }} for Linux
           path: |
             *.deb
             *.AppImage
